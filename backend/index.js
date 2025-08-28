@@ -1,23 +1,17 @@
 import express from "express";
 import mongoose from "mongoose";
-import cors from "cors";
 import dotenv from "dotenv";
 
-import guruRoutes from "./routes/guruRoutes.js";
-import templeRoutes from "./routes/templeRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
+dotenv.config(); // 🔹 Important: load env vars
 
-dotenv.config();
 const app = express();
-app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB Connected"));
+console.log("Using Mongo URI:", process.env.MONGO_URI); // 🔹 Debug
 
-app.use("/api/gurus", guruRoutes);
-app.use("/api/temples", templeRoutes);
-app.use("/api/users", userRoutes);
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.error("❌ MongoDB connection error:", err));
 
-app.get("/", (req, res) => res.send("AI-enabled Digamber Jain Backend Running"));
-
-app.listen(process.env.PORT || 5000, () => console.log("Server running"));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
