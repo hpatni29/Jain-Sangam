@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
 
 const guruSchema = new mongoose.Schema({
-  name: String,
-  bio: String,
-  youtube: String
+  name: { type: String, required: true },
+  youtube: { type: String }, // optional video link
 });
 
-const Guru = mongoose.model("Guru", guruSchema);
-export default Guru;
+export default mongoose.model("Guru", guruSchema);
