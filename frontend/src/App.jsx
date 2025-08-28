@@ -1,58 +1,22 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
+import Gurus from "./components/Gurus";
+import Temples from "./components/Temples";
+import Users from "./components/Users";
+import AIQuestion from "./components/AIQuestion";
 
-const API_BASE = import.meta.env.VITE_API_BASE;
-
-export default function App() {
-  const [gurus, setGurus] = useState([]);
-  const [temples, setTemples] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    axios.get(`${API_BASE}/api/gurus/ai`).then(res => setGurus(res.data));
-    axios.get(`${API_BASE}/api/temples/ai`).then(res => setTemples(res.data));
-    axios.get(`${API_BASE}/api/users`).then(res => setUsers(res.data));
-  }, []);
-
-  const handleSearch = () => {
-    axios.get(`${API_BASE}/api/users/search/${search}`).then(res => setUsers(res.data));
-  };
-
+function App() {
   return (
-    <div style={{ padding: 16 }}>
-      <h1>🙏 Digamber Jain Community</h1>
-
-      <section>
-        <h2>Gurus</h2>
-        {gurus.map(g => (
-          <div key={g._id}>
-            <h3>{g.name} ({g.title})</h3>
-            <p>{g.biography}</p>
-            {g.youtubeVideos?.map((url,i) => (
-              <iframe key={i} width="300" height="170" src={url.replace("watch?v=", "embed/")} title={g.name}></iframe>
-            ))}
-          </div>
-        ))}
-      </section>
-
-      <section>
-        <h2>Temples</h2>
-        {temples.map(t => (
-          <div key={t._id}>
-            <h3>{t.name}</h3>
-            <p>{t.location}</p>
-            <p>Facilities: {t.facilities.join(", ")}</p>
-          </div>
-        ))}
-      </section>
-
-      <section>
-        <h2>Users</h2>
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search by name"/>
-        <button onClick={handleSearch}>Search</button>
-        <ul>{users.map(u=><li key={u._id}>{u.name} - {u.email}</li>)}</ul>
-      </section>
+    <div className="max-w-5xl mx-auto p-6 font-sans">
+      <h1 className="text-3xl font-bold mb-6 text-center">Digamber Jain Community</h1>
+      <AIQuestion />
+      <div className="my-6 border-b"></div>
+      <Gurus />
+      <div className="my-6 border-b"></div>
+      <Temples />
+      <div className="my-6 border-b"></div>
+      <Users />
     </div>
   );
 }
+
+export default App;

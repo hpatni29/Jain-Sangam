@@ -2,9 +2,10 @@ import mongoose from "mongoose";
 
 const templeSchema = new mongoose.Schema({
   name: String,
-  location: String,
-  facilities: [String],
-  contactEmail: String
-}, { timestamps: true });
+  city: String,
+  state: String,
+  facilities: [String]
+});
 
-export default mongoose.model("Temple", templeSchema);
+const Temple = mongoose.model("Temple", templeSchema);
+export default Temple;
