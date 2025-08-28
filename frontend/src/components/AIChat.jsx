@@ -1,43 +1,62 @@
 import { useState } from "react";
-import axios from "axios";
 
-const AIChat = () => {
+export default function AIChat() {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const askQuestion = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!question) return;
     setLoading(true);
+    setAnswer("");
+
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_BASE}/api/ai`, { question });
-      setAnswer(res.data.answer);
+      const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/ai`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question }),
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        setAnswer("Error: " + data.error);
+      } else {
+        setAnswer(data.answer);
+      }
     } catch (err) {
-      setAnswer("Error fetching AI response.");
-    } finally {
-      setLoading(false);
+      setAnswer("Error fetching AI response");
+      console.error(err);
     }
+
+    setLoading(false);
   };
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Ask AI</h2>
-      <form onSubmit={askQuestion} className="mb-4">
+    <div className="p-4 max-w-lg mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Ask the AI</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
         <input
           type="text"
-          className="border p-2 w-full rounded-lg"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Ask something..."
+          placeholder="Type your question..."
+          className="border p-2 rounded"
+          required
         />
-        <button className="mt-2 bg-primary text-white px-4 py-2 rounded hover:bg-accent transition">
-          {loading ? "Thinking..." : "Ask"}
+        <button
+          type="submit"
+          className="bg-blue-600 text-white p-2 rounded disabled:opacity-50"
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Ask"}
         </button>
       </form>
-      {answer && <p className="border p-4 rounded-lg bg-gray-100">{answer}</p>}
+      {answer && (
+        <div className="mt-4 p-2 border rounded bg-gray-50">
+          <strong>Answer:</strong> {answer}
+        </div>
+      )}
     </div>
   );
-};
-
-export default AIChat;
+}

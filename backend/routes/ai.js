@@ -1,12 +1,13 @@
+// routes/ai.js
 import express from "express";
 import OpenAI from "openai";
 
 const router = express.Router();
 
-// Ensure your environment variable is loaded
+// Initialize OpenAI with your key from environment
 const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 
-// AI Chat Route
+// POST /api/ai
 router.post("/", async (req, res) => {
   try {
     const { question } = req.body;
@@ -15,6 +16,7 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Question is required" });
     }
 
+    // Call OpenAI API
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: question }],
@@ -22,8 +24,8 @@ router.post("/", async (req, res) => {
     });
 
     const answer = response.choices[0].message.content;
-
     res.json({ answer });
+
   } catch (err) {
     console.error("AI Error:", err);
     res.status(500).json({ error: "Error fetching AI response" });
