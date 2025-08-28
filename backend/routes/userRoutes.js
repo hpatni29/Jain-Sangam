@@ -1,27 +1,28 @@
 import express from "express";
 import User from "../models/User.js";
-
 const router = express.Router();
 
-// Create a user
 router.post("/", async (req, res) => {
-  try {
-    const user = new User(req.body);
-    await user.save();
-    res.status(201).json(user);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+  try { const user = new User(req.body); await user.save(); res.status(201).json(user); }
+  catch (err) { res.status(400).json({ error: err.message }); }
 });
 
-// Get all users
-router.get("/", async (req, res) => {
-  try {
-    const users = await User.find().sort({ createdAt: -1 });
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+router.get("/", async (req, res) => { const users = await User.find(); res.json(users); });
+
+router.get("/search/:name", async (req, res) => {
+  const regex = new RegExp(req.params.name, "i");
+  const users = await User.find({ name: regex });
+  res.json(users);
+});
+
+router.post("/connect", async (req, res) => {
+  const { userId, connectId } = req.body;
+  const user = await User.findById(userId);
+  const connectUser = await User.findById(connectId);
+  if (!user || !connectUser) return res.status(404).json({ error: "User not found" });
+  if (!user.connectedUsers.includes(connectId)) user.connectedUsers.push(connectId);
+  await user.save();
+  res.json({ success: true, user });
 });
 
 export default router;
